@@ -82,10 +82,10 @@ internal_link_or_words_helper revParas =
 
 -- "http://fed.wiki/welcome-visitors.json
 
--- fw_url : (Wiki.Slug slugname) -> String
+fw_url : Wiki.Slug -> String
 fw_url (Wiki.Slug slugname) =
 --  "http://fed.wiki/" ++ slugname ++ ".json"
-  slugname
+  "/" ++ slugname
 
 
 para_to_html : Para -> Html msg
