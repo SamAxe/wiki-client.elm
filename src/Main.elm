@@ -37,7 +37,7 @@ main =
 type alias Model =
   { key : Nav.Key
   , url : Url.Url
-  , story : Story
+  , stories : List Story
   }
 
 
@@ -56,7 +56,7 @@ type alias Story =
 init : () -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
 init flags url key =
 --  ( Model key url { title = "blank", story = [] }, Cmd.none )
-  ( Model key url { title = "blank", story = [] }, getRandomStory (Wiki.asSlug "Welcome Visitors"))
+  ( Model key url [ { title = "blank", story = [] }], getRandomStory (Wiki.asSlug "Welcome Visitors"))
 
 
 --  (Loading, getRandomStory)
@@ -91,9 +91,7 @@ fred slug =
 
 doit : Url.Url -> Maybe Wiki.Slug
 doit url =
-  let x = Url.Parser.parse routeParser url in
-      Debug.log (fred x )
-      x
+  Url.Parser.parse routeParser url
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -114,7 +112,7 @@ update msg model =
     GotStory result ->
       case result of
         Ok story ->
-          ( { model | story = story }, Cmd.none)
+          ( { model | stories = (story :: model.stories) }, Cmd.none)
 
         Err _ -> ( model, Cmd.none)
 
@@ -122,7 +120,7 @@ update msg model =
 
 
 subscriptions : Model -> Sub Msg
-subscriptions model =
+subscriptions _ =
   Sub.none
 
 
@@ -160,7 +158,7 @@ view model =
     [ text "The current URL is: "
     , b [] [ text (Url.toString model.url) ]
     , h2 [] [ text "Random Story" ]
-    , viewStory model
+    , viewStories model
     ]
     ]
   }
@@ -178,19 +176,19 @@ viewParagraph paragraph =
   in
 
   div [] [ h3 [] [ 
-           span [] [text paragraph.type_]
+           text paragraph.type_
          , span [style "color" "red"] [ text "id:"]
-         , span [] [ text paragraph.id ]
+         , text paragraph.id
          ]
          , para_text
          ]
 
 
-viewStory : Model -> Html Msg
-viewStory model =
+viewStory : Story -> Html Msg
+viewStory story =
       div []
-        [ h1 [] [ text model.story.title ]
-        , div [] (List.map viewParagraph model.story.story)
+        [ h1 [] [ text story.title ]
+        , div [] (List.map viewParagraph story.story)
 --        , p [ style "text-align" "right" ]
 --            [ text "— "
 --            , cite [] [ text story.source ]
@@ -199,13 +197,17 @@ viewStory model =
         ]
 
 
+viewStories : Model -> Html Msg
+viewStories model =
+      div []
+        (List.map viewStory model.stories)
+
 
 -- HTTP
 
 
 getRandomStory : Wiki.Slug -> Cmd Msg
 getRandomStory (Wiki.Slug slugname) =
-  Debug.log slugname
   Http.get
     --{ url = "https://elm-lang.org/api/random-quotes"
     { url = "http://fed.wiki/" ++ slugname ++ ".json"

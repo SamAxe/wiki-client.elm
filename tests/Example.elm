@@ -36,26 +36,32 @@ suite =
   test "A first test" <|
     \_ -> Expect.equal ( Ok { x = 3, y = 14 }) ( Parser.run point "(3,14)")
 
-hello_words : Test
-hello_words =
+link_words : Test
+link_words =
   test "Parse some plain words" <|
     \_ -> Expect.equal ( Ok ("hello world") ) ( Parser.run WikiHelper.plain_words "hello world")
 
 
-hello_words1 : Test
-hello_words1 =
+link_words1 : Test
+link_words1 =
   test "Parse some link words" <|
     \_ -> Expect.equal (Ok ( WikiHelper.Link ("hello world") ) ) ( Parser.run WikiHelper.internal_link_or_word "[[hello world]]")
 
-hello_words2 : Test
-hello_words2 =
+link_words2 : Test
+link_words2 =
   test "Parse some link words 2" <|
     \_ -> Expect.equal (Ok ( WikiHelper.PlainText ("[hello world") ) ) ( Parser.run WikiHelper.internal_link_or_word "[hello world")
 
-hello_words3 : Test
-hello_words3 =
+link_words3 : Test
+link_words3 =
   test "Parse some link words 3" <|
     \_ -> Expect.equal (Ok ( [ WikiHelper.Link ("hello world"), WikiHelper.PlainText " ", WikiHelper.Link ("hello world") ] ) ) ( Parser.run WikiHelper.internal_link_or_words "[[hello world]] [[hello world]]")
+
+link_words4 : Test
+link_words4 =
+  test "Parse some link words 4" <|
+    \_ -> Expect.equal (Ok ( [ WikiHelper.PlainText ("add more writing spaces. Read "), WikiHelper.Link "How to Wiki", WikiHelper.PlainText (" for more ideas. Follow "), WikiHelper.Link "Recent Changes", WikiHelper.PlainText " here and nearby." ] ) ) ( Parser.run WikiHelper.internal_link_or_words "add more writing spaces. Read [[How to Wiki]] for more ideas. Follow [[Recent Changes]] here and nearby.")
+
 
 
 
@@ -63,4 +69,5 @@ slug_test : Test
 slug_test =
   test "test some slugs" <|
     \_ -> Expect.equal ( Wiki.Slug "welcome-visitors") ( Wiki.asSlug "Welcome Visitors" )
+
 
