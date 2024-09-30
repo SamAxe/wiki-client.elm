@@ -23,15 +23,25 @@ plain_words_helper link_text =
   else
     Parser.succeed link_text
 
-plain_words : Parser String
-plain_words =
+plain_parse_to_next_link : Parser String
+plain_parse_to_next_link =
   Parser.getChompedString (
     Parser.chompWhile (\c -> c /= '[' && c /= '\n' && c /= '\r') )
-    |> Parser.andThen plain_words_helper
+
+start_plain_parse : Parser ()
+start_plain_parse =
+  Parser.succeed ()
+  |. Parser.chompIf (\c -> c == '[' )
+
+plain_words : Parser String
+plain_words =
+  plain_parse_to_next_link
+  |> Parser.andThen plain_words_helper
 
 plain_words2 : Parser String
 plain_words2 =
-  Parser.getChompedString ( Parser.chompWhile (\c -> c /= '\n' && c /= '\r') )
+  Parser.getChompedString (
+    Parser.chompWhile (\c -> c /= '\n' && c /= '\r') )
     |> Parser.andThen plain_words_helper
 
 link_words : Parser String
