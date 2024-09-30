@@ -12,6 +12,12 @@ import Url
 import Url.Parser exposing ( (</>) )
 -- import Url.Route
 
+
+import Element exposing (..)
+import Element.Background exposing (..)
+
+
+
 import WikiHelper
 import Wiki
 
@@ -56,7 +62,7 @@ type alias Story =
 init : () -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
 init flags url key =
 --  ( Model key url { title = "blank", story = [] }, Cmd.none )
-  ( Model key url [ { title = "blank", story = [] }], getRandomStory (Wiki.asSlug "Welcome Visitors"))
+  ( Model key url [ ], getRandomStory (Wiki.asSlug "Welcome Visitors"))
 
 
 --  (Loading, getRandomStory)
@@ -151,23 +157,33 @@ subscriptions _ =
 -- 
 
 
+-- view : Model -> Browser.Document Msg
+-- view model =
+--   { title = "URL Interceptor"
+--   , body = [ div []
+--     [ text "The current URL is: "
+--     , b [] [ text (Url.toString model.url) ]
+--     , h2 [] [ text "Random Story" ]
+--     , viewStories model
+--     ]
+--     ]
+--   }
+
+
 view : Model -> Browser.Document Msg
 view model =
-  { title = "URL Interceptor"
-  , body = [ div []
-    [ text "The current URL is: "
-    , b [] [ text (Url.toString model.url) ]
-    , h2 [] [ text "Random Story" ]
-    , viewStories model
-    ]
-    ]
-  }
+    { title = "Example"
+    , body =
+        [ layout
+            []
+            (viewStories model)
+        ]
+    }
 
 
 
 
-
-viewParagraph : Paragraph -> Html Msg
+viewParagraph : Paragraph -> Element Msg
 viewParagraph paragraph =
   let
     para_text =
@@ -176,35 +192,23 @@ viewParagraph paragraph =
           WikiHelper.resolveLinks t
 
         Nothing ->
-          text "<no text>"
+          Element.text "<no text>"
   in
 
-  div [] [ h3 [] [ 
-           text paragraph.type_
-         , span [style "color" "red"] [ text "id:"]
-         , text paragraph.id
-         ]
-         , para_text
-         ]
+  para_text
 
 
-viewStory : Story -> Html Msg
+viewStory : Story -> Element Msg
 viewStory story =
-      div []
-        [ h1 [] [ text story.title ]
-        , div [] (List.map viewParagraph story.story)
---        , p [ style "text-align" "right" ]
---            [ text "— "
---            , cite [] [ text story.source ]
---            , text (" by " ++ story.author ++ " (" ++ String.fromInt story.year ++ ")")
---            ]
-        ]
+        column [ width (px 400), padding 30, alignTop, height (px 500), Element.Background.color (rgba 0.5 0.5 0.5 1), scrollbarY ] 
+        (Element.el [ centerX, padding 30 ] (Element.text story.title)
+        :: (List.map viewParagraph story.story))
 
 
-viewStories : Model -> Html Msg
+viewStories : Model -> Element Msg
 viewStories model =
-      div []
-        (List.map viewStory model.stories)
+      Element.row [ spacing 10]
+        (List.map viewStory (List.reverse model.stories))
 
 
 -- HTTP

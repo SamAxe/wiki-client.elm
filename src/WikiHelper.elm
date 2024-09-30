@@ -5,10 +5,14 @@ import Html exposing (..)
 
 import Browser
 import Browser.Navigation as Nav
-import Html exposing (..)
-import Html.Attributes exposing (..)
+-- import Html exposing (..)
+-- import Html.Attributes exposing (..)
 import Url
+import Element exposing (..)
+
+
 import Wiki
+import Element.Font exposing (underline)
 
 type Para =
     PlainText String
@@ -98,22 +102,24 @@ fw_url (Wiki.Slug slugname) =
   "/" ++ slugname
 
 
-para_to_html : Para -> Html msg
+para_to_html : Para -> Element msg
 para_to_html p =
   case p of
     Link link_string -> 
       let slug = Wiki.asSlug link_string in
-        Html.a [ Html.Attributes.href (fw_url slug) ] [ Html.text link_string ]
+--        Html.a [ Html.Attributes.href (fw_url slug) ] [ Html.text link_string ]
+        Element.link [ Element.Font.bold, underline] { url = (fw_url slug), label = Element.text link_string }
 
-    PlainText text_string -> Html.text text_string
+    PlainText text_string -> Element.text text_string
 
-text_to_html : String -> Html msg
+
+text_to_html : String -> Element msg
 text_to_html paragraph_text =
   case Parser.run internal_link_or_words paragraph_text of
-    Ok para_ast -> Html.p [] (List.map para_to_html para_ast)
-    Err _ -> Html.text "parse error: "
+    Ok para_ast -> Element.paragraph [padding 10] (List.map para_to_html para_ast)
+    Err _ -> Element.text "parse error: "
 
-resolveLinks : String -> Html.Html msg
+resolveLinks : String -> Element msg
 resolveLinks wiki_text =
     wiki_text
     |> text_to_html
