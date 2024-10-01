@@ -108,7 +108,7 @@ para_to_html p =
     Link link_string -> 
       let slug = Wiki.asSlug link_string in
 --        Html.a [ Html.Attributes.href (fw_url slug) ] [ Html.text link_string ]
-        Element.link [ Element.Font.bold, underline] { url = (fw_url slug), label = Element.text link_string }
+        Element.link [ Element.Font.bold, underline, Element.Font.color (rgb255 0x72 0x9F 0xCF) ] { url = (fw_url slug), label = Element.text link_string }
 
     PlainText text_string -> Element.text text_string
 
