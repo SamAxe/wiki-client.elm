@@ -44,11 +44,11 @@ inlinesToId : List Inline -> String
 inlinesToId list =
     list
         |> Block.extractInlineText
-        |> Debug.log "extracted"
+--        |> Debug.log "extracted"
         |> String.split " "
-        |> Debug.log "split"
+--        |> Debug.log "split"
         |> String.join "-"
-        |> Debug.log "joined"
+--        |> Debug.log "joined"
 
 
 gatherHeadings : List Block -> List ( Block.HeadingLevel, List Inline )
@@ -152,7 +152,7 @@ renderer =
                         (\index itemBlocks ->
                             Element.paragraph [ Element.spacing 5 ]
                                 [ Element.paragraph [ Element.alignTop ]
-                                    (Element.text (String.fromInt (index + startingIndex) ++ " ") :: itemBlocks)
+                                    (Element.text (String.fromInt (index + startingIndex) ++ ". ") :: itemBlocks)
                                 ]
                         )
                 )

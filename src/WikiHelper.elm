@@ -112,6 +112,15 @@ para_to_html p =
 
     PlainText text_string -> Element.text text_string
 
+para_to_markdown : Para -> String
+para_to_markdown p =
+  case p of
+    Link link_string -> 
+      let slug = Wiki.asSlug link_string in
+        "[" ++ link_string ++ "](" ++ (fw_url slug) ++ ")"
+
+    PlainText text_string -> text_string
+
 
 text_to_html : String -> Element msg
 text_to_html paragraph_text =
@@ -119,8 +128,20 @@ text_to_html paragraph_text =
     Ok para_ast -> Element.paragraph [padding 10] (List.map para_to_html para_ast)
     Err _ -> Element.text "parse error: "
 
+text_to_markdown : String -> String
+text_to_markdown paragraph_text =
+  case Parser.run internal_link_or_words paragraph_text of
+    Ok para_ast -> (List.map para_to_markdown para_ast) |> String.join " "
+    Err _ -> "parse error: "
+
+
 resolveLinks : String -> Element msg
 resolveLinks wiki_text =
     wiki_text
     |> text_to_html
+
+resolveLinks_markdown : String -> String
+resolveLinks_markdown wiki_text =
+    wiki_text
+    |> text_to_markdown
 

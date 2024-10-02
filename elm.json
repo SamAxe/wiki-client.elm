@@ -1,12 +1,12 @@
 {
     "type": "application",
     "source-directories": [
-        "src"
+        "src",
+        "src/elm-ui/src"
     ],
     "elm-version": "0.19.1",
     "dependencies": {
         "direct": {
-            "Gipphe/elm-ui": "2.0.0",
             "dillonkearns/elm-markdown": "7.0.1",
             "elm/browser": "1.0.2",
             "elm/core": "1.0.5",
@@ -16,6 +16,7 @@
             "elm/parser": "1.1.0",
             "elm/regex": "1.0.0",
             "elm/url": "1.0.0",
+            "elm/virtual-dom": "1.0.3",
             "elm-explorations/test": "2.2.0"
         },
         "indirect": {
@@ -23,7 +24,6 @@
             "elm/file": "1.0.5",
             "elm/random": "1.0.0",
             "elm/time": "1.0.0",
-            "elm/virtual-dom": "1.0.3",
             "rtfeldman/elm-hex": "1.0.0"
         }
     },

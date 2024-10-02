@@ -21,6 +21,7 @@ import Element.Font as Font
 import WikiHelper
 import Wiki
 import MarkdownUi
+import Element.Input as Input
 
 
 -- MAIN
@@ -107,12 +108,15 @@ update msg model =
     LinkClicked urlRequest ->
       case urlRequest of
         Browser.Internal url ->
+          Debug.log ("Internal: " ++ Url.toString url)
           ( model, Nav.pushUrl model.key (Url.toString url) )
 
         Browser.External href ->
+          Debug.log ("external " ++ href)
           ( model, Nav.load href )
 
     UrlChanged url ->
+      Debug.log ("Changed: " ++ Url.toString url)
       ( { model | url = url }
       , getRandomStory ( (Maybe.withDefault (Wiki.asSlug "Welcome Visitors") (doit url)) )
       )
@@ -247,11 +251,11 @@ viewParagraph paragraph =
   case paragraph.type_ of
     "paragraph" -> paragraph |> paragraph_text |> WikiHelper.resolveLinks
     "markdown"  -> 
-        (case MarkdownUi.view (paragraph |> paragraph_text) of
+        (case MarkdownUi.view (paragraph |> paragraph_text |> WikiHelper.resolveLinks_markdown ) of
             Ok rendered ->
                 Element.column
                     [ Element.spacing 30
-                    , Element.padding 50
+                    , Element.padding 10
                     ]
                     rendered
 
@@ -263,6 +267,11 @@ viewParagraph paragraph =
 
     _ -> paragraph |> paragraph_text |> WikiHelper.resolveLinks
 
+storyButtonBar =
+ row []
+    [ Input.button [] {onPress = Nothing, label = text "Save"}
+    , Input.button [] {onPress = Nothing, label = text "Cancel"}
+    ]
 
 
 viewStory : Story -> Element Msg
@@ -284,7 +293,8 @@ viewStory story =
   in
 
         borderedColumn 
-        (Element.el [ centerX, padding 30, Font.bold, Font.size 24 ] (Element.text story.title)
+        (storyButtonBar
+        :: (Element.el [ centerX, padding 30, Font.bold, Font.size 24 ] (Element.text story.title))
         :: (List.map viewParagraph story.story))
 
 
@@ -298,9 +308,11 @@ viewStories model =
 
 getRandomStory : Wiki.Slug -> Cmd Msg
 getRandomStory (Wiki.Slug slugname) =
+  Debug.log ( "getRandomStory: " ++ slugname)
   Http.get
     --{ url = "https://elm-lang.org/api/random-quotes"
-    { url = "http://fed.wiki/" ++ slugname ++ ".json"
+    -- { url = "http://fed.wiki/" ++ slugname ++ ".json"
+    { url = "http://localhost:3000/" ++ slugname ++ ".json"
     , expect = Http.expectJson GotStory storyDecoder
     }
 
