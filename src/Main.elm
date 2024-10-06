@@ -85,6 +85,7 @@ type Msg
   | TextChanged String
   | SelectParagraph (Maybe ParaId)
   | SaveEditItem
+  | CancelEditItem
 
 
 -- type Route =
@@ -145,6 +146,14 @@ update msg model =
         , pselected = Nothing
         }
       , Cmd.none )
+
+    CancelEditItem -> 
+      ( { model 
+        | ptext = Nothing
+        , pselected = Nothing
+        }
+      , Cmd.none )
+
 
 
 getSelection : Maybe ParaId -> List Story -> Maybe String
@@ -262,12 +271,12 @@ paragraph_text paragraph =
 
 editItem : Maybe String -> Element Msg
 editItem paragraph =
- Element.column [width fill]
+ Element.column [width fill, Background.color color.lightGrey, Border.rounded 6]
    [ row [width fill]
-      [ Input.button [Element.padding 10] {onPress = Just SaveEditItem, label = Element.text "Save"}
-      , Input.button [Element.padding 10] {onPress = Nothing, label = Element.text "Cancel"}
+      [ Input.button [Element.padding 10,Font.bold, Font.underline, Font.color (rgb255 0x72 0x9F 0xCF) ] {onPress = Just SaveEditItem, label = Element.text "Save"}
+      , Input.button [Element.padding 10,Font.bold, Font.underline, Font.color (rgb255 0x72 0x9F 0xCF) ] {onPress = Just CancelEditItem, label = Element.text "Cancel"}
       ]
-   , Input.multiline [ Border.rounded 4, width fill ] 
+   , Input.multiline [ Border.rounded 4, width fill, Background.color color.lightGrey, Border.width 2 ] 
       { onChange = TextChanged 
       , text = Maybe.withDefault "" paragraph
       , placeholder = Nothing 
@@ -307,12 +316,10 @@ viewParagraph model paragraph =
   then editParagraph model.ptext
   else viewParagraph1 paragraph
 
-storyButtonBar =
- row []
-    [ Input.button [] {onPress = Nothing, label = Element.text "Save"}
-    , Input.button [] {onPress = Nothing, label = Element.text "Cancel"}
+viewStoryButtonHeader =
+  row [width fill]
+    [ Input.button [Element.padding 10,Font.bold, Font.underline, Font.color color.lightGrey ] {onPress = Nothing, label = Element.text "Close"}
     ]
-
 
 viewStory : Model -> Story -> Element Msg
 viewStory model story =
@@ -333,7 +340,7 @@ viewStory model story =
   in
 
         borderedColumn 
-        (storyButtonBar
+        ( viewStoryButtonHeader
         :: (Element.el [ centerX, padding 30, Font.bold, Font.size 24 ] (Element.text story.title))
         :: (List.map (viewParagraph model) story.story))
 
