@@ -114,15 +114,15 @@ update msg model =
     LinkClicked urlRequest ->
       case urlRequest of
         Browser.Internal url ->
-          Debug.log ("Internal: " ++ Url.toString url)
+--          Debug.log ("Internal: " ++ Url.toString url)
           ( model, Nav.pushUrl model.key (Url.toString url) )
 
         Browser.External href ->
-          Debug.log ("external " ++ href)
+--          Debug.log ("external " ++ href)
           ( model, Nav.load href )
 
     UrlChanged url ->
-      Debug.log ("Changed: " ++ Url.toString url)
+--      Debug.log ("Changed: " ++ Url.toString url)
       ( { model | url = url }
       , getRandomStory ( (Maybe.withDefault (Wiki.asSlug "Welcome Visitors") (doit url)) )
       )
@@ -319,6 +319,7 @@ viewParagraph model paragraph =
 viewStoryButtonHeader =
   row [width fill]
     [ Input.button [Element.padding 10,Font.bold, Font.underline, Font.color color.lightGrey ] {onPress = Nothing, label = Element.text "Close"}
+    , Input.button [Element.padding 10,Font.bold, Font.underline, Font.color color.lightGrey ] {onPress = Nothing, label = Element.text "Export"}
     ]
 
 viewStory : Model -> Story -> Element Msg
@@ -355,7 +356,7 @@ viewStories model =
 
 getRandomStory : Wiki.Slug -> Cmd Msg
 getRandomStory (Wiki.Slug slugname) =
-  Debug.log ( "getRandomStory: " ++ slugname)
+--  Debug.log ( "getRandomStory: " ++ slugname)
   Http.get
     --{ url = "https://elm-lang.org/api/random-quotes"
     -- { url = "http://fed.wiki/" ++ slugname ++ ".json"
