@@ -203,7 +203,7 @@ view : Model -> Browser.Document Msg
 view model =
     { title = "Example"
     , body =
-      [ layout [ width (px (350*4+30*3)), height fill ] <|
+      [ layout [ width (px (columnWidth*4+30*3)), height fill ] <|
           column [ width fill, scrollbarX]
               [ header
               , (viewStories model)
@@ -322,12 +322,15 @@ viewStoryButtonHeader =
     , Input.button [Element.padding 10,Font.bold, Font.underline, Font.color color.lightGrey ] {onPress = Nothing, label = Element.text "Export"}
     ]
 
+columnWidth : Int
+columnWidth = 400
+
 viewStory : Model -> Story -> Element Msg
 viewStory model story =
   let 
     borderedColumn =
       column
-        [ width (px 350)
+        [ width (px columnWidth)
         , height (px 500)
         , scrollbarY
         , padding 5
